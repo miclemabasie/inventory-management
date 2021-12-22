@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Customers{% endblock title %}
+
+{% block content %}
+<div class="fixed d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">{{page_name}}</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2">
+      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addCustomer">Add Customer</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addDept">Depts</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+     </div>
+    {% comment %} <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+      <span data-feather="calendar"></span>
+      This week
+    </button> {% endcomment %}
+  </div> 
+</div>
+
+<h3>Customer List </h3>
+<div class="row">
+  <div class="col-md-6">
+      
+  </div>
+  <div class="col-md-6 d-flex justify-content-end">
+    <ul class="nav navbar-fixed-top nav-tabs ml-auto" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button" role="tab" aria-controls="products" aria-selected="true">All Customers</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="count_stock-tab" data-bs-toggle="tab" data-bs-target="#count_stock" type="button" role="tab" aria-controls="count_stock" aria-selected="false">Costomers Owing</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="category-tab" data-bs-toggle="tab" data-bs-target="#category" type="button" role="tab" aria-controls="category" aria-selected="false">category</button>
+        </li>
+      </ul>
+  </div>
+</div>
+      
+      
+      <div class="">
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="products" role="tabpanel" aria-labelledby="products-tab">
+          <div class="table-responsive">
+            {% include './utils/customer-table.html' %}
+          </div>
+        </div>
+        <div class="tab-pane fade" id="count_stock" role="tabpanel" aria-labelledby="count_stock-tab">{% include './utils/customers-owing.html' %}</div>
+        <div class="tab-pane fade" id="category" role="tabpanel" aria-labelledby="category-tab">replace me</div>
+      </div>
+      </div>
+
+      <div class="modal fade" id="addCustomer" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel">Add Category</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            <div id="modal-msg-category"></div>
+                <form class="form-control" id='add-customer' method='POST' action="{% url 'customers:add_customer' %}">
+                  {% csrf_token %}
+                  {{customer_add_form|crispy}}
+                  <input type="submit" class="form-control btn btn-primary my-2">
+                </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Close</button>
+              <!-- <button type="button" class="btn btn-primary">Understood</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    
+{% endblock content %}
+
+
+{% block scripts %}
+    $(document).ready(function() {
+      $('#example3').DataTable();           
+      $('#example4').DataTable();           
+  } );
+
+
+  const form = document.getElementById('add-customer')
+  let name = document.getElementById('id_name')
+  let photo = document.getElementById("id_photo")
+  let phone = document.getElementById('id_phone')
+  let about = document.getElementById('id_about')
+
+  const handleAddProduct = (name, category, price, quantity, reorderLevel, ) => {
+    table.innerHTML += `<tr>
+      <td>${name}</td>
+      <td>${category}</td>
+      <td>${price}</td>
+      <td>${quantity}</td>
+      <td>Low</td>
+      <td>
+        <div class="dropdown">
+          <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+            Actions
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <li><a class="dropdown-item" href="products/edit-product/${name}">Edit</a></li>
+            <li><a class="dropdown-item" href="delete">Delete</a></li>
+            <li><a class="dropdown-item" href="#">Detail</a></li>
+          </ul>
+        </div>
+      </td>
+    </tr>`
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    var formdata = new FormData()
+    formdata.append('image', photo)
+    console.log('############')
+
+    var data = new FormData()
+    data.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+    data.append('name', name.value)
+    data.append('photo', photo.files[0])  
+    $.ajax({
+      type: 'POST', 
+      url: '{% url 'customers:add_customer'  %}',
+      processData: false,
+      contentType: false,
+      mimetype: 'multipart/form-data',
+      data: data,
+      
+      success: function(response){
+        console.log(response)
+      }
+    })    
+  })
+
+ 
+{% endblock scripts %}
+

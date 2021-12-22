@@ -1,0 +1,43 @@
+<table id="example2" class="display" style="width:100%">
+        <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Date Created</th>
+              <th>Date Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for purchase in purchase_history %}
+                  <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{purchase.product.name}}</td>
+                    <td>{{purchase.product.category}}</td>
+                    <td>{{purchase.product.price}}</td>
+                    <td>{{purchase.purchase_quantity}}</td>
+                    <td>{{purchase.purchase_created}}</td>
+                    <td>{{purchase.purchase_updated}}</td>
+                  </tr>
+              {% empty %}
+                  <h3>No purchases yet </h3>
+              {% endfor %}
+           
+        </tbody>
+        <tfoot>
+            <tr>
+              <td class="fw-bold">[ID]</td>
+              <td class="fw-bold">[Name]]</td>
+              <td class="fw-bold">[Category]</td>
+              <td class="fw-bold">[Price]</td>
+              <td class="fw-bold">[Quantity]</td>
+              <td class="fw-bold">[Date Created]</td>
+              <td class="fw-bold">[Date Updated]</td>
+            </tr>
+        </tfoot>
+    </table>
+    
+    

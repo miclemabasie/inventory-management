@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block title %}{% endblock title %}
+
+{% block content %}
+
+<div class="fixed d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{page_name}}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group me-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Add product</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop1">Add Category</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+      
+       </div>
+      {% comment %} <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+        <span data-feather="calendar"></span>
+        This week
+      </button> {% endcomment %}
+    </div> 
+  </div>
+
+
+   <div class="row">
+       <div class="col-md-4">
+           <form id="add-sale" action="" method="post">
+               {% csrf_token %}
+               {{sales_form|crispy}}
+               <input class="btn btn-primary mt-2 form-control" type="submit" value="Add -> ">
+           </form>
+       </div>
+       <div class="col-md-8">
+        <table class="table" id='sale-point-table'>
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Product</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Unit Price</th>
+                <th scope="col">Total Price</th>
+                <th scope="col">Pos ID</th>
+                <th scope="col">Remove</th>
+              </tr>
+            </thead>
+           
+          </table>
+
+          <div class="bg-light clearfix">
+            <div style="float:left;"><p style="font-weight:bold; font-size:20px">Total Cost</p></div>
+
+
+            
+        </div>
+
+          <div style="float:right; margin-top:50px">
+            <!-- <a href="{% url 'sales:set_sale' %}"><button id="set-sale-btn" type="button" class="btn btn-sm btn-outline-secondary">Add Sale</button></a> -->
+            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+              Validate
+            </button>
+          </div>
+
+          <div style="float:right; margin-top:50px">
+            <a href="{% url 'sales:set_sale' %}"><button type="button" class="btn btn-sm btn-outline-secondary">Add Sale $ Reciept</button></a>
+          </div>
+       </div>
+   </div>
+
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="lead">
+          Confirm Sale.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <a href=''><button id="set-sale-btn" type="button" class="btn btn-primary">Confirm</button></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Vertically centered scrollable modal -->
+<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+  ...
+</div>
+{% endblock content %}
+
+{% block scripts %}
+ 
+  form = document.getElementById('add-sale')
+  
+  const product = document.getElementById('id_product')
+  const quantity = document.getElementById('id_quantity')
+  const price = document.getElementById('id_price')
+  const created = document.getElementById('id_date')
+  const url = '/sales/sales-point/'
+  const sBtn = document.getElementById('set-sale-btn')
+  let salesTable = document.getElementById('sale-point-table')
+
+
+  const calCulatePrice = (quantity, unitPrice) => {
+    let totalPrice = quantity * unitPrice
+    return totalPrice
+  }
+
+  const calculateIndex = (table) => {
+    var tabIndex =  salesTable.rows.length
+    return tabIndex
+  }
+  
+  {/* Create delete button */}
+
+
+  const updateTabeleRow = (resData, table) => {
+    salesTable.innerHTML += `<tr>
+    <th scope="row">${calculateIndex(table)}</th>
+    <td>${resData.product}</td>
+    <td>${resData.quantity}</td>
+    <td>${resData.price}</td>
+    <td>${calCulatePrice(resData.quantity, resData.price)}</td>
+    <td class="position_id">${resData.position_id}</td>
+    <td><button class="btn btn-danger btn-sm delete">X</button></td>
+  </tr>`
+  } 
+
+  salesTable.addEventListener('click', (e) => {
+    // console.log(salesTable)
+    if (e.target.classList.contains('delete')){
+      if (confirm('Are you sure')){
+        var tr = e.target.parentElement.parentElement;
+        // salesTable.remove(tr)
+        var body = tr.parentElement
+        console.log(body)
+        body.removeChild(tr)
+      }
+    }
+  })
+
+  form.addEventListener('submit', (e) => {
+    console.log(product.value, quantity.value, price.value, created.value)
+      e.preventDefault()
+      $.ajax({
+          type: 'POST',
+          url: url,
+          data: {
+            'csrfmiddlewaretoken': '{{csrf_token}}',
+            'product': product.value,
+            'quantity': quantity.value,
+            'price': price.value,
+            'created': created.value
+          },
+
+          success: function(response){
+              sBtn.style.disabled = false
+              updateTabeleRow(response)                                 
+          }
+      })
+
+  })
+
+
+
+{/* set sale options */}
+const sUrl = '/sales/set-sale/'
+
+const IDs = new Array(1, 2, 3, 4, 5)
+
+if(salesTable.rows.length === 1){
+  console.log('')
+}
+const fin = JSON.stringify(IDs)
+
+sBtn.addEventListener('click', (e) => {
+
+  var idList = []
+
+  var table = document.getElementById("sale-point-table");
+        //iterate trough rows
+          for (var i = 0, row; row = table.rows[i]; i++) {
+        //iterate trough columns
+          for (var j = 0, col; col = row.cells[j]; j++) {
+            // do something
+            if(col.className === 'position_id') {
+              idList.push(col.innerHTML)
+            }
+        }  
+  }
+  
+  console.log(idList)
+  $.ajax({
+    type: 'POST',
+    url: sUrl,
+    data: {
+      'csrfmiddlewaretoken': '{{csrf_token}}',
+      'IDs': JSON.stringify(idList),
+    },
+   
+  })
+})
+
+
+
+{% endblock scripts %}

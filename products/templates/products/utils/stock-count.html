@@ -1,0 +1,46 @@
+<h2 class="py-3">Count Stock</h2>
+
+<table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Date Created</th>
+                <th>Date Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+    
+            {% for product in products %}
+
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{product.name}}</td>
+                <td>{{product.category}}</td>
+                <td>{{product.price}}</td>
+                <td>{{product.created}}</td>
+                <td>{{product.updated}}</td>
+                <td>Action</td>
+            </tr>
+            {% endfor %}
+           
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>[#]</th>
+                <th>[Name]</th>
+                <th>[Category]</th>
+                <th>[Price]</th>
+                <th>[Quantity]</th>
+                <th>[State]</th>
+                <th>[Action]</th>
+            </tr>
+        </tfoot>
+    </table>
+    <div class="d-flex justify-content-end py-4">
+        
+        <a class="btn btn-primary float-right" href="#">Export</a>
+    </div>

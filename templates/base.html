@@ -1,0 +1,112 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.87.0">
+    <title>StockGrid-{% block title %}{% endblock title %}</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/dashboard/">
+
+    
+
+    <!-- Bootstrap core CSS -->
+    
+    <link href="{% static 'sites/assets/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'bootstrap/css/styles.css' %}" rel="stylesheet">
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+{% comment %} 
+      table.scrolldown {
+            width: 100%;
+              
+            /* border-collapse: collapse; */
+            border-spacing: 0;
+            border: 2px solid black;
+        }
+          
+        /* To display the block as level element */
+        table.scrolldown tbody, table.scrolldown thead {
+            display: block;
+        } 
+          
+        thead tr th {
+            height: 40px; 
+            line-height: 40px;
+        }
+          
+        table.scrolldown tbody {
+              
+            /* Set the height of table body */
+            height: 60vh; 
+              
+            /* Set vertical scroll */
+            overflow-y: auto;
+              
+            /* Hide the horizontal scroll */
+            overflow-x: hidden; 
+        }
+          
+        tbody { 
+            border-top: 2px solid black;
+        }
+          
+        tbody td, thead th {
+            width : 200px;
+            border-right: 2px solid black;
+        }
+        td {
+            text-align:center;
+        } {% endcomment %}
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+
+    
+    <!-- Custom styles for this template -->
+    <link href="{% static 'sites/dashboard.css' %}" rel="stylesheet">
+    {% comment %} <link href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css" rel="stylesheet"> {% endcomment %}
+    <link href="{% static 'bootstrap/css/datatables.css' %}" rel="stylesheet">
+  </head>
+  <body>
+    {% include 'utils/navigation.html' %}
+    
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    {% if message %}
+      <div class="alert alert-success" role="alert" id="">{{message}}</div>
+    {% endif %}
+    {% block content %}
+      
+      {% endblock content %}
+    </main>
+  </div>
+</div>
+
+    {% comment %} <script src="{% static 'bootstrap/js/allinonebootstrap.js' %}"></script> {% endcomment %}
+    <script src="{% static 'bootstrap/js/jquery.js' %}"></script>
+      <script src="{% static 'bootstrap/js/datatables.js' %}"></script>
+    <script src="{% static 'sites/assets/dist/js/bootstrap.bundle.min.js' %}"></script>
+
+      {% comment %} <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script> {% endcomment %}
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+      {% comment %} <script src="{% static 'sites/dashboard.js' %}"></script> {% endcomment %}
+  <script>
+  {% block scripts %}{% endblock scripts %}
+  </script>
+  </body>
+</html>

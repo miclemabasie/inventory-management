@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="shortcut icon" href="assets/images/favicon.ico" type="image/x-icon">
+    <title>Miri UI Kit - Login</title>
+
+    <!-- Vendor css -->
+    <link rel="stylesheet" href="/src/vendors/@mdi/font/css/materialdesignicons.min.css">
+
+    <!-- Base css with customised bootstrap included -->
+    
+    <link rel="stylesheet" href="{% static 'authentication/login/src/css/miri-ui-kit-free.css' %}">
+
+    <!-- Stylesheet for demo page specific css -->
+    <link rel="stylesheet" href="./assets/css/demo.css">
+</head>
+<body class="login-page">
+    <header class="miri-ui-kit-header header-no-bg-img header-navbar-only">
+    </header>
+    <div class="card login-card">
+        <div class="card-body">
+            <h3 class="text-center text-white font-weight-light mb-4">LOG IN</h3>
+            <form method='post'>
+                {% csrf_token %}
+                <div class="form-group">
+                    {{form.username}}
+                </div>
+                <div class="form-group">
+                    {{form.password}}
+                </div>
+                <input type="submit" value="Login" class="btn btn-danger btn-block mb-3">
+            </form>
+            <a href="{% url 'password_reset' %}">Forget password</a>
+        </div>
+    </div>
+
+
+    <footer>
+        <div class="container">
+            <nav class="navbar navbar-dark bg-transparent navbar-expand footer-navbar d-block d-sm-flex text-center">
+                <span class="navbar-text">&copy;F-F Techno. All rights reserved.</span>
+                <div class="navbar-nav ml-auto justify-content-center">
+                    <a href="#" class="nav-link">Support</a>
+                    <a href="#" class="nav-link">Terms</a>
+                    <a href="#" class="nav-link">Privacy</a>
+                </div>
+            </nav>
+        </div>
+    </footer>
+    <script src="../src/vendors/jquery/dist/jquery.min.js"></script>
+    <script src="../src/vendors/popper.js/dist/umd/popper.min.js"></script>
+    <script src="../src/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

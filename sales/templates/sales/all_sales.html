@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block title %}{% endblock title %}
+
+{% block content %}
+
+<div class="fixed d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">{{page_name}}</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2">
+        <a href="{% url 'sales:sales_point' %}"><button type="button" class="btn btn-sm btn-outline-secondary">Add Sale</button></a>
+      <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+      </div>
+    {% comment %} <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+      <span data-feather="calendar"></span>
+      This week
+    </button> {% endcomment %}
+  </div>
+</div>
+
+<table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Sale ID</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Date of Sale</th>
+                <th>Cusomer</th>
+              
+            </tr>
+        </thead>
+        <tbody>
+          {% for sale in sales %}
+            {% for position in sale.get_positions %}
+            <tr>
+                <td>{{position.position_id}}</td>
+                <td>{{position.product}}</td>
+                <td>{{position.quantity}}</td>
+                <td>{{position.created}}</td>
+                <td>{{position.customer}}</td>
+                
+            </tr>
+            {% endfor %}
+          {% endfor %}
+      
+        </tbody>
+        <tfoot>
+            <tr>
+              <th>Sale ID</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Date of Sale</th>
+                <th>Cusomer</th>
+               
+            </tr>
+        </tfoot>
+    </table>
+
+
+  
+{% endblock content %}
+
+{% block scripts %}
+$(document).ready(function() {
+  $('#example').DataTable();
+} );
+{% endblock scripts %}
+

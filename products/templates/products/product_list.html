@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}products{% endblock title %}
+
+{% block content %}
+
+  <div class="fixed d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">{{page_name}}</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Add product</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop1">Add Category</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+          
+           </div>
+          {% comment %} <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+            <span data-feather="calendar"></span>
+            This week
+          </button> {% endcomment %}
+        </div> 
+      </div>
+
+
+<div class="row">
+  <div class="col-md-6">
+      
+  </div>
+  <div class="col-md-6 d-flex justify-content-end">
+    <ul class="nav navbar-fixed-top nav-tabs ml-auto" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button" role="tab" aria-controls="products" aria-selected="true">List products</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="count_stock-tab" data-bs-toggle="tab" data-bs-target="#count_stock" type="button" role="tab" aria-controls="count_stock" aria-selected="false">Count Stock</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="category-tab" data-bs-toggle="tab" data-bs-target="#category" type="button" role="tab" aria-controls="category" aria-selected="false">category</button>
+        </li>
+      </ul>
+  </div>
+</div>
+      
+      
+      <div class="">
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="products" role="tabpanel" aria-labelledby="products-tab">
+          <div class="table-responsive">
+            {% include './utils/products-table.html' %}
+          </div>
+        </div>
+        <div class="tab-pane fade" id="count_stock" role="tabpanel" aria-labelledby="count_stock-tab">{% include './utils/stock-count.html' %}</div>
+        <div class="tab-pane fade" id="category" role="tabpanel" aria-labelledby="category-tab">{% include "./utils/datatables.html" %}</div>
+      </div>
+      </div>
+
+    
+
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Add Product Form</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <div id="modal-msg"></div>
+          <form class="form-control" id='add-product-form' method='POST' action="{% url 'products:product_add' %}">
+            {% csrf_token %}
+            {{add_product_form|crispy}}
+            <input type="submit" class="form-control btn btn-primary my-2">
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Understood</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+{% comment %} Adding Category {% endcomment %}
+<div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Add Product Form</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <div id="modal-msg"></div>
+          <form class="form-control" id='category-form' method='POST' action="{% url 'products:add_category' %}">
+            {% csrf_token %}
+            {{add_category_form|crispy}}
+            <input type="submit" class="form-control btn btn-primary my-2">
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Understood</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for purchasing products -->
+
+
+{% endblock content %}
+
+
+{% block scripts %}
+    $(document).ready(function() {
+      $('#example').DataTable();
+      $('#example1').DataTable();      
+      $('#example2').DataTable();      
+  } );
+
+
+    const table = document.getElementById("example")
+    const form = document.getElementById("add-product-form")
+    const message_box = document.getElementById("modal-msg")
+    const category = document.getElementById("id_category")
+    const productName = document.getElementById("id_name")
+    const price = document.getElementById("id_price")
+    const quantity = document.getElementById("id_quantity")
+    const reorderLevel = document.getElementById("id_reorder_quantity")
+    const csrfToken = document.getElementsByName("csrfmidlewaretoken")
+    const delete_btn = document.getElementById("delete_btn")
+    const url = "/products/product-add/"
+    const purchaseForm = document.getElementById("purchase-form")
+
+    purchaseProduct = document.getElementById('id_product')
+    purchaseQuantity = document.getElementById('id_purchase_quantity')
+    purchaseDate = document.getElementById('id_purchase_created')
+    purchaseMsgBox = document.getElementById('modal-msg-purchase')
+
+    
+    
+    
+    const handleAddProduct = (name, category, price, quantity, reorderLevel, ) => {
+      table.innerHTML += `<tr>
+        <td>${name}</td>
+        <td>${category}</td>
+        <td>${price}</td>
+        <td>${quantity}</td>
+        <td>Low</td>
+        <td>
+          <div class="dropdown">
+            <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+              Actions
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+              <li><a class="dropdown-item" href="products/edit-product/${name}">Edit</a></li>
+              <li><a class="dropdown-item" href="delete">Delete</a></li>
+              <li><a class="dropdown-item" href="#">Detail</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>`
+    }
+    
+    const productAddHandleAlert = (element, type, message) => {
+      element.innerHTML = `<div class="alert alert-${type}" role="alert" id="modal-msg">${message}</div>`
+    }
+
+
+
+  
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      $.ajax({
+        type: 'POST',
+        url: url,
+        data: {
+          "csrfmiddlewaretoken": '{{csrf_token}}',
+          "category": category.value,
+          "name": productName.value,
+          "price": price.value,
+          "quantity": quantity.value,
+          "reorderLevel": reorderLevel.value,
+        },
+        
+        success: function(response){
+          handleAddProduct(response.name, response.category, response.quantity)
+          productAddHandleAlert(message_box, 'success', `successfully added ${response.name} under the category ${response.category}`)
+          form.reset()
+        }
+      })
+    })
+
+
+  categoryForm = document.getElementById('category-form')
+  catUrl = "/products/add-category/"
+  cateName = document.getElementById('id_category_name')
+  catMsgBox = document.getElementById('modal-msg-category')
+
+  console.log(categoryForm)
+  categoryForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    $.ajax({
+      'type': 'POST',
+      'url': catUrl,
+      'data': {
+        'csrfmiddlewaretoken': '{{csrf_token}}',
+        'category_name': cateName.value,
+      },
+      success: function(response){
+        
+        console.log(response)
+        productAddHandleAlert(catMsgBox, 'success', `successfully added "${response.data.name}" as category.`)
+      }
+    })
+  })
+
+{% endblock scripts %}

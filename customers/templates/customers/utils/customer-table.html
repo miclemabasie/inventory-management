@@ -1,0 +1,57 @@
+<table id="example3" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>phone</th>
+                <th>Is Owing</th>
+                <th>Date Created</th>
+                <th>Date Updated</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+    
+            {% for customer in customers %}
+
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{customer.name}}</td>
+                <td>
+                    {% if customer.phone %}
+                    {{customer.phone}}</td>                    
+                    {% else %}
+                    N/A
+                    {% endif %}
+                <td> <input type="checkbox" name='mark' {% if customer.is_owing %}checked{% endif %}> </td>
+                <td>{{customer.date_created}}</td>
+                <td>{{customer.date_updated}}</td>
+                <td>Action is here</td>
+                
+                
+                {% comment %} <td>
+                    <div class="dropdown">
+                    <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        Actions
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <li id="" class="dropdown-item">Edit</li>
+                    </ul>
+                    </div>
+                </td> {% endcomment %}
+            </tr>
+            {% endfor %}
+           
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>[#]</th>
+                <th>[Name]</th>
+                <th>[Phone]</th>
+                <th>[Is Owing]</th>
+                <th>[Date Created]</th>
+                <th>[Date Updated]</th>                
+                <th>[Action]</th>
+            </tr>
+        </tfoot>
+    </table>

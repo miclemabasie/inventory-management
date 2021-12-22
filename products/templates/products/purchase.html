@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}products{% endblock title %}
+
+{% block content %}
+  <div class="fixed d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">{{page_name}}</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            
+            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop1">Purchase</button>
+          </div>
+          {% comment %} <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+            <span data-feather="calendar"></span>
+            This week
+          </button> {% endcomment %}
+        </div>
+      </div>
+
+      {% comment %} <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas> {% endcomment %}
+      <ul class="nav navbar-fixed-top nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button" role="tab" aria-controls="products" aria-selected="true">List all purchases</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="count_stock-tab" data-bs-toggle="tab" data-bs-target="#count_stock" type="button" role="tab" aria-controls="count_stock" aria-selected="false">Last month</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="this_week-tab" data-bs-toggle="tab" data-bs-target="#this_week" type="button" role="tab" aria-controls="this_week" aria-selected="false">This Week</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="recent-tab" data-bs-toggle="tab" data-bs-target="#recent" type="button" role="tab" aria-controls="recent" aria-selected="false">recent</button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="products" role="tabpanel" aria-labelledby="products-tab">
+            <h2>{{title}}</h2>
+        
+            {% include './utils/purchase_history_table.html' %}
+          
+        </div>
+        <div class="tab-pane fade" id="count_stock" role="tabpanel" aria-labelledby="count_stock-tab">{% include './utils/purchase_history_table.html' with purchase_history=weekly_purchase %}</div>
+        <div class="tab-pane fade" id="this_week" role="tabpanel" aria-labelledby="this_week-tab">{% include './utils/purchase_history_table.html' with purchase_history=monthly_purchase %}</div>
+        <div class="tab-pane fade" id="recent" role="tabpanel" aria-labelledby="recent-tab">{% include './utils/purchase_history_table.html' with purchase_history=yes_purchases %}</div>
+      </div>
+
+    
+
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Add Product Form</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <div id="modal-msg"></div>
+          <form class="form-control" id='add-product-form' method='POST' action="{% url 'products:product_add' %}">
+            {% csrf_token %}
+            {{add_product_form|crispy}}
+            <input type="submit" class="form-control btn btn-primary my-2">
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Understood</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal for purchasing products -->
+<div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Add Product Form</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <div id="modal-msg-purchase"></div>
+          <form class="form-control" id='purchase-form' method='POST' action="{% url 'products:product_purchase' %}">
+            {% csrf_token %}
+            {{purchase_form|crispy}}
+            <input type="submit" class="form-control btn btn-primary my-2">
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Understood</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+  {% block scripts %}
+
+   $(document).ready(function() {
+      $('#example2').DataTable();
+     } );
+
+     
+    // Bring in the variables
+    const table = document.getElementById("products-table")
+    const form = document.getElementById("add-product-form")
+    const message_box = document.getElementById("modal-msg")
+    const category = document.getElementById("id_category")
+    const productName = document.getElementById("id_name")
+    const price = document.getElementById("id_price")
+    const quantity = document.getElementById("id_quantity")
+    const reorderLevel = document.getElementById("id_reorder_quantity")
+    const csrfToken = document.getElementsByName("csrfmidlewaretoken")
+    const delete_btn = document.getElementById("delete_btn")
+    const url = "/products/product-add/"
+    const purchaseForm = document.getElementById("purchase-form")
+
+    // get the data for the purchase form 
+    purchaseProduct = document.getElementById('id_product')
+    purchaseQuantity = document.getElementById('id_purchase_quantity')
+    purchaseDate = document.getElementById('id_purchase_created')
+    purchaseMsgBox = document.getElementById('modal-msg-purchase')
+
+
+    console.log(purchaseForm)
+    
+    const handleAddProduct = (name, category, price, quantity, reorderLevel, ) => {
+      table.innerHTML += `<tr>
+              <td>${name}</td>
+              <td>${category}</td>
+              <td>${price}</td>
+              <td>${quantity}</td>
+              <td>Low</td>
+              <td>
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                    Actions
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    <li><a class="dropdown-item" href="products/edit-product/${name}">Edit</a></li>
+                    <li><a class="dropdown-item" href="delete">Delete</a></li>
+                    <li><a class="dropdown-item" href="#">Detail</a></li>
+                  </ul>
+                </div>
+              </td>
+            </tr>`
+    }
+    
+    const productAddHandleAlert = (element, type, message) => {
+      element.innerHTML = `<div class="alert alert-${type}" role="alert" id="modal-msg">${message}</div>`
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      $.ajax({
+        type: 'POST',
+        url: url,
+        data: {
+          "csrfmiddlewaretoken": '{{csrf_token}}',
+          "category": category.value,
+          "name": productName.value,
+          "price": price.value,
+          "quantity": quantity.value,
+          "reorderLevel": reorderLevel.value,
+        },
+        
+        success: function(response){
+          console.log(response)
+          handleAddProduct(response.name, response.category, response.quantity)
+          productAddHandleAlert(message_box, 'success', `successfully added ${response.name} under the category ${response.category}`)
+          form.reset()
+        }
+      })
+    })
+
+    purchaseForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      $.ajax({
+        type: 'POST',
+        url: '{% url "products:product_purchase" %}',
+        data: {
+          'csrfmiddlewaretoken': '{{csrf_token}}',
+          'product': purchaseProduct.value,
+          'purchase_quantity': purchaseQuantity.value,
+          'purchase_created': purchaseDate.value
+
+        },
+        success: function(response){
+          if('data' in response ){
+            productAddHandleAlert(purchaseMsgBox, 'success', `seccessfuly added purchase for ${response.data.product_name} by ${response.data.purchase_quantity}`)
+            purchaseForm.reset()
+          }
+          if('error' in response & purchaseQuantity.value <= 0 );{
+            productAddHandleAlert(purchaseMsgBox, 'warning', `${response.error.purchase_quantity}`)
+              console.log(response)
+          }
+        },
+        error: function(error){
+          productAddHandleAlert(purchaseMsgBox, 'danger', 'something went wrong')
+          console.log(error)
+        }
+      })
+    })
+    
+  
+    
+  {% endblock scripts %}

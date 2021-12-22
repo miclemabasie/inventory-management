@@ -1,0 +1,176 @@
+[
+{
+  "model": "products.category",
+  "pk": 1,
+  "fields": {
+    "category_name": "Network accessories",
+    "data_created": "2021-11-09T20:09:27.292Z",
+    "data_updated": "2021-11-09T20:09:27.292Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 2,
+  "fields": {
+    "category_name": "Photocopiers",
+    "data_created": "2021-11-09T20:09:36.571Z",
+    "data_updated": "2021-11-09T20:09:36.571Z"
+  }
+},
+{
+  "model": "products.category",
+  "pk": 3,
+  "fields": {
+    "category_name": "New Laptops",
+    "data_created": "2021-11-09T20:09:57.522Z",
+    "data_updated": "2021-11-09T20:09:57.522Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 1,
+  "fields": {
+    "user": null,
+    "category": 1,
+    "name": "CAT5 UTP network cable",
+    "image": "no_pic.png",
+    "price": 75000.0,
+    "quantity": 11,
+    "slug": "cat5-utp-network-cable",
+    "reorder_quantity": 5,
+    "active": true,
+    "created": "2021-11-09T20:10:46.613Z",
+    "updated": "2021-11-15T05:58:24.697Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 2,
+  "fields": {
+    "user": null,
+    "category": 2,
+    "name": "Canon",
+    "image": "no_pic.png",
+    "price": 250000.0,
+    "quantity": 2,
+    "slug": "canon",
+    "reorder_quantity": 1,
+    "active": true,
+    "created": "2021-11-09T20:11:14.141Z",
+    "updated": "2021-11-11T04:54:37.696Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 3,
+  "fields": {
+    "user": 1,
+    "category": 2,
+    "name": "IR1024",
+    "image": "no_pic.png",
+    "price": 250000.0,
+    "quantity": 5,
+    "slug": "ir1024",
+    "reorder_quantity": 2,
+    "active": true,
+    "created": "2021-11-11T03:52:32.661Z",
+    "updated": "2021-11-15T06:18:29.272Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 4,
+  "fields": {
+    "user": 1,
+    "category": 1,
+    "name": "4510 Router",
+    "image": "no_pic.png",
+    "price": 50000.0,
+    "quantity": 3,
+    "slug": "4510-router",
+    "reorder_quantity": 2,
+    "active": true,
+    "created": "2021-11-11T03:56:45.663Z",
+    "updated": "2021-11-11T04:54:10.843Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 5,
+  "fields": {
+    "user": 1,
+    "category": 1,
+    "name": "5Port D-Link Switch",
+    "image": "no_pic.png",
+    "price": 10000.0,
+    "quantity": 13,
+    "slug": "5port-switch",
+    "reorder_quantity": 5,
+    "active": true,
+    "created": "2021-11-11T04:05:46.011Z",
+    "updated": "2021-11-15T06:21:53.612Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 7,
+  "fields": {
+    "user": 1,
+    "category": 3,
+    "name": "Dell latitude d620",
+    "image": "no_pic.png",
+    "price": 50000.0,
+    "quantity": 8,
+    "slug": "dell-latitude-d620",
+    "reorder_quantity": 1,
+    "active": true,
+    "created": "2021-11-11T04:55:28.571Z",
+    "updated": "2021-11-15T06:01:48.941Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 14,
+  "fields": {
+    "user": 1,
+    "category": 2,
+    "name": "canon pixma 2411",
+    "image": "",
+    "price": 200000.0,
+    "quantity": 7,
+    "slug": "canon-pixma-2411",
+    "reorder_quantity": 2,
+    "active": true,
+    "created": "2021-11-12T21:27:51.564Z",
+    "updated": "2021-11-15T06:04:30.559Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 17,
+  "fields": {
+    "user": 1,
+    "category": 2,
+    "name": "canon IR2018",
+    "image": "",
+    "price": 350000.0,
+    "quantity": 2,
+    "slug": "canon-ir2018",
+    "reorder_quantity": 1,
+    "active": true,
+    "created": "2021-11-15T06:14:06.671Z",
+    "updated": "2021-11-15T06:14:06.793Z"
+  }
+},
+{
+  "model": "products.purchase",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "product": 5,
+    "purchase_quantity": 1,
+    "purchase_created": "2021-11-15T04:39:42.285Z",
+    "purchase_updated": "2021-11-15T04:39:42.285Z"
+  }
+}
+]
