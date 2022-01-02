@@ -21,6 +21,10 @@
         </div> 
       </div>
 
+      <div class="ui-widget">
+        <label for="tags">Tags: </label>
+        <input id="tags">
+      </div>
 
 <div class="row">
   <div class="col-md-6">
@@ -58,7 +62,7 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal fade ui-widget" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       
@@ -68,11 +72,62 @@
       </div>
       <div class="modal-body">
       <div id="modal-msg"></div>
-          <form class="form-control" id='add-product-form' method='POST' action="{% url 'products:product_add' %}">
+          {% comment %} <form class="form-control" id='add-product-form' method='POST' action="{% url 'products:product_add' %}">
             {% csrf_token %}
             {{add_product_form|crispy}}
             <input type="submit" class="form-control btn btn-primary my-2">
-          </form>
+          </form> {% endcomment %}
+          <form action="" method="POST" id="add-product-form">
+            {% csrf_token %}
+            <div class="form-group">
+                {{form.email.label_tag}}
+                <input 
+                type="text"
+                class="py-2 my-2 form-control {% if form.category.errors %}is-invalid{% endif %}"
+                id="id_category"
+                name="category"
+                placeholder="Product category"
+                value="{{ form.category.value|default:""}}">
+                {% if form.email.errors %}
+                  <div class="invalid-feedback">
+                      {{form.category.errors}}
+                  </div>
+                {% endif %}
+            </div>
+    
+            <div class="form-group">
+                {{form.password1.label_tag}}
+                <input 
+                type="password"
+                class="form-control {% if form.password1.errors %}is-invalid{% endif %}"
+                id="id_password1"
+                name="password1"
+                value="{{ form.password1.value|default:"" }}">
+                {% if form.password1.errors %}
+                    <div class="invalid-feedback">
+                        {{form.password1.errors}}
+                    </div>
+                {% endif %}
+            </div>
+    
+            <div class="form-group">
+                {{form.password2.label_tag}}
+                <input 
+                type="password"
+                class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
+                id="id_password2"
+                name="password2"
+                value="{{ form.password2.value|default:"" }}">
+                {% if form.password2.errors %}
+                    <div class="invalid-feedback">
+                        {{form.password1.errors}}
+                    </div>
+                {% endif %}
+            </div>
+    
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+          
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Close</button>
@@ -83,7 +138,7 @@
 </div>
 
 {% comment %} Adding Category {% endcomment %}
-<div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal fade ui-widget" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       
@@ -98,6 +153,8 @@
             {{add_category_form|crispy}}
             <input type="submit" class="form-control btn btn-primary my-2">
           </form>
+         
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Close</button>
@@ -140,7 +197,12 @@
     purchaseMsgBox = document.getElementById('modal-msg-purchase')
 
     
-    
+    $( function() {
+      $( "#tags" ).autocomplete({
+        source: '{% url 'products:category_list' %}'
+      });
+      console.log('this')
+    } );
     
     const handleAddProduct = (name, category, price, quantity, reorderLevel, ) => {
       table.innerHTML += `<tr>
@@ -186,9 +248,15 @@
         },
         
         success: function(response){
-          handleAddProduct(response.name, response.category, response.quantity)
-          productAddHandleAlert(message_box, 'success', `successfully added ${response.name} under the category ${response.category}`)
-          form.reset()
+          console.log(response)
+          if ('error' in response){
+            
+            productAddHandleAlert(message_box, 'warning', `Product with name: ${productName.value}, already exists in this category, please go to purchase instead.`)
+          }else {
+            handleAddProduct(response.name, response.category, response.quantity)
+            productAddHandleAlert(message_box, 'success', `successfully added ${response.name} under the category ${response.category}`)
+            form.reset()
+          }       
         }
       })
     })
@@ -199,7 +267,7 @@
   cateName = document.getElementById('id_category_name')
   catMsgBox = document.getElementById('modal-msg-category')
 
-  console.log(categoryForm)
+  console.log(form)
   categoryForm.addEventListener('submit', (e) => {
     e.preventDefault();
     $.ajax({
@@ -218,3 +286,46 @@
   })
 
 {% endblock scripts %}
+
+
+$( function() {
+  var availableTags = [
+    "ActionScript",
+    "AppleScript",
+    "Asp",
+    "BASIC",
+    "C",
+    "C++",
+    "Clojure",
+    "COBOL",
+    "ColdFusion",
+    "Erlang",
+    "Fortran",
+    "Groovy",
+    "Haskell",
+    "Java",
+    "JavaScript",
+    "Lisp",
+    "Perl",
+    "PHP",
+    "Python",
+    "Ruby",
+    "Scala",
+    "Scheme"
+  ];
+  $( "#tags" ).autocomplete({
+    source: availableTags
+  });
+} );
+</script>
+</head>
+<body>
+
+<div class="ui-widget">
+<label for="tags">Tags: </label>
+<input id="tags">
+</div>
+
+
+</body>
+</html>

@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 # logger.setLevel(logging.DEBUG)
 
 class AddProductForm(forms.ModelForm):
+   
     class Meta:
         model = Product
         fields = ['category', 'name', 'image', 'price', 'quantity', 'reorder_quantity']

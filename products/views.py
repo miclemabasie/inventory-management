@@ -8,10 +8,19 @@ from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib import messages
+from django.db.models import Q
 
 
 @login_required
 def product_list_view(request):
+    if 'term' in request.GET:
+        print('some jquery get request was made')
+        qs = Product.objects.filter(name__icontains=request.GET.get('term'))
+        titles = list()
+        for product in qs:
+            titles.appen(product.name)
+        
+        return JsonResponse(titles, safe=False)
     products = Product.objects.filter(active=True)
     categories = Category.objects.prefetch_related('product')
     template_name = 'products/product_list.html'
@@ -40,6 +49,14 @@ def category_list_view(request):
         'section': 'products',
         'categories': category_list,
     }
+
+    if 'term' in request.GET:
+        qs = Category.objects.filter(category_name__icontains=request.GET.get('term'))
+        titles = list()
+        for category in qs:
+            titles.append(category.category_name)
+        print(titles)
+        return JsonResponse(titles, safe=False)
 
     return render(request, template_name, context)
 
@@ -78,29 +95,39 @@ def product_add_view(request):
             print(response)
             user = request.user
             category = response.get('category')
-            categroy_item = get_object_or_404(Category, id=category)
+            category_item = get_object_or_404(Category, id=category)
             name = response.get('name')
             image = response.get('image')
             price = response.get('price')
             quantity = response.get('quantity')
             reorder_quantity = response.get("reorderLevel")
-            product = Product.objects.create(user=user, category=categroy_item, name=name, image=image, price=price, quantity=quantity, reorder_quantity=reorder_quantity)
-            product.save()
+            # Check if product with same already exist in the database
+            try:
+                normalized_product_name = name.lower()
+                normalized_category_name = category_item.category_name.lower()
+                product_check = Product.objects.get(Q(name__iexact=normalized_product_name) & Q(category__category_name__iexact=normalized_category_name))
+                if product_check:
+                    print('this product is available')
+                    return JsonResponse({'error': "product in database already"})
+            except Product.DoesNotExist:
+                
+                product = Product.objects.create(user=user, category=category_item, name=name, image=image, price=price, quantity=quantity, reorder_quantity=reorder_quantity)
+                product.save()
 
-            purchase = Purchase.objects.create(user=request.user, product=product, purchase_quantity=quantity,purchase_created=timezone.now())
-            purchase.save()
-            
+                purchase = Purchase.objects.create(user=request.user, product=product, purchase_quantity=quantity,purchase_created=timezone.now())
+                purchase.save()
+                
 
-            data['user'] = user.username
-            data['name'] = name
-            data['category'] = categroy_item.category_name
-            data['image'] = image
-            data['price'] = price
-            data['quantity'] = quantity
-            data['reorder_quantity'] = reorder_quantity
-            messages.success(request, 'Product was saved successfully')
-            
-            return JsonResponse(data, safe=False)
+                data['user'] = user.username
+                data['name'] = name
+                data['category'] = category_item.category_name
+                data['image'] = image
+                data['price'] = price
+                data['quantity'] = quantity
+                data['reorder_quantity'] = reorder_quantity
+                messages.success(request, 'Product was saved successfully')
+                
+                return JsonResponse(data, safe=False)
     else:
         form = AddProductForm()
 

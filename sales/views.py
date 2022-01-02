@@ -24,12 +24,14 @@ def sales(request):
 
 
 def sales_point(request):
+    
     user = request.user
     set_sale_form = SaleConfirmForm()
     if request.method == 'POST':
         form = AddPositionForm(request.POST)
         if form.is_valid():
             data = {}
+            error_response = {}
             post_data = request.POST
             product_id = post_data.get('product')
             product_id = int(product_id)
@@ -47,17 +49,24 @@ def sales_point(request):
             data['price'] = price
             data['created'] = created
             
-     
-            position = Position.objects.create(product=product, quantity=product_quantity, price=price, created=created)
-            position.save()
-            print(position.position_id)
-            data['position_id'] = position.position_id
-            return JsonResponse(data, safe=False)
+            if product.quantity >= int(product_quantity):
+                position = Position.objects.create(product=product, quantity=product_quantity, price=price, created=created)
+                position.save()
+                print(position.position_id)
+                data['position_id'] = position.position_id
+                return JsonResponse(data, safe=False)
+            else:
+                errors = {}
+                errors['product_quantity_error'] = 'Not enough products to perform this transaction'
+            
+                error_response['error'] = errors
+                return JsonResponse(error_response, safe=False)
 
         else:
             print(form.errors)
     else:
         form = AddPositionForm()
+     
     
     template_name = 'sales/sales_point.html'
     context = {
@@ -90,7 +99,8 @@ def set_sale(request):
             sale.positions.add(pos)
         sale.save
         print(sale.transaction_id)
-
+        position.product.quantity -= position.quantity
+        position.product.save()
         return redirect('sales:sales_point')     
     
     template_name = 'sales/set_sale.html'

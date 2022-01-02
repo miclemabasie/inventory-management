@@ -22,7 +22,7 @@
     </div> 
   </div>
 
-
+  <div id="msg-box-position"></div>
    <div class="row">
        <div class="col-md-4">
            <form id="add-sale" action="" method="post">
@@ -108,7 +108,7 @@
   const url = '/sales/sales-point/'
   const sBtn = document.getElementById('set-sale-btn')
   let salesTable = document.getElementById('sale-point-table')
-
+  let positionMsgBox = document.getElementById('msg-box-position')
 
   const calCulatePrice = (quantity, unitPrice) => {
     let totalPrice = quantity * unitPrice
@@ -121,6 +121,18 @@
   }
   
   {/* Create delete button */}
+
+  const positionAddHandleAlert = (element, type, message) => {
+    element.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert" id="modal-msg"><strong>${message}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>`
+  }
+  
+  const dismissAlet = () => {
+     $("#msg-box-position").fadeTo(5000, 500).slideUp(500, function(){
+      $("#msg-box-position").slideUp(500);
+  });
+  }
 
 
   const updateTabeleRow = (resData, table) => {
@@ -151,6 +163,7 @@
   form.addEventListener('submit', (e) => {
     console.log(product.value, quantity.value, price.value, created.value)
       e.preventDefault()
+
       $.ajax({
           type: 'POST',
           url: url,
@@ -163,8 +176,20 @@
           },
 
           success: function(response){
-              sBtn.style.disabled = false
-              updateTabeleRow(response)                                 
+              console.log(response)
+              console.log(response['error'])
+              if ('error' in response){
+                if (response['error']['product_quantity_error']){
+
+                  positionAddHandleAlert(positionMsgBox, 'danger', 'Error while adding this position, Not enough products to perform this transaction')
+                  dismissAlet()
+                }
+              }else {
+                updateTabeleRow(response) 
+                positionAddHandleAlert(positionMsgBox, 'success', 'Added sale')
+                dismissAlet()
+              } 
+
           }
       })
 
